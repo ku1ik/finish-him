@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="finishhim.execute">
+        <CODE>
+	    net.sickill.finishhim.FinishHimExecutor.execute(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>
