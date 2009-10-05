@@ -42,11 +42,14 @@ object FinishHimExecutor {
     val prefix = getPrefix()
     if (prefix != null) {
       log("FinishHim: found prefix: " + prefix)
-      completing = true
       prefixLength = prefix.length()
       suggestedWordLength = prefixLength
-      buildWordList(prefix, buffer.getText(0, buffer.getLength()))
-      true
+      if (buildWordList(prefix, buffer.getText(0, buffer.getLength()))) {
+        completing = true
+        true
+      } else {
+        false
+      }
     } else {
       log("FinishHim: empty prefix, leaving")
       false
@@ -55,7 +58,9 @@ object FinishHimExecutor {
   
   def buildWordList(prefix: String, bufferText: String) = {
     log("FinishHim: buildWordList")
-    wordList = List(prefix + "l", prefix + "ls", prefix + "bar", prefix + "bar2000")
+    wordList = List.fromArray(bufferText.split("[^\\w]+")).removeDuplicates.filter { word => word.startsWith(prefix) } - prefix
+    log("FinishHim: wordList = " + wordList)
+    !wordList.isEmpty
   }
   
   def getPrefix() : String = {
