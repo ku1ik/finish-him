@@ -8,8 +8,6 @@ import org.gjt.sp.util.Log
 import org.gjt.sp.jedit.TextUtilities
 
 object FinishHimExecutor {
-  var completing = false
-  var invoked = false
   var wordList: List[String] = List()
   var nextWordIndex = 0
   var buffer: Buffer = null
@@ -19,21 +17,18 @@ object FinishHimExecutor {
   var suggestedWordLength = 0
   var caretLine = 0
   
+  def firstInvocation(view: View) : Boolean = view.getInputHandler().getLastActionCount == 1
+  
   def execute(view: View) = {
-    invoked = true
     log("executing...")
-    if (completing) {
-      log("continuing completion...")
-      complete(view)
-    } else {
-      log("starting completion...")
-      if (setup(view)) {
-        complete(view)
-      }
+    if (firstInvocation(view)) {
+      setup(view)
     }
+    complete(view)
   }
   
-  def setup(view: View) : Boolean = {
+  def setup(view: View) = {
+    log("FinishHim: setup()")
     nextWordIndex = 0
     buffer = view.getBuffer()
     textArea = view.getTextArea()
@@ -44,27 +39,33 @@ object FinishHimExecutor {
       log("FinishHim: found prefix: " + prefix)
       prefixLength = prefix.length()
       suggestedWordLength = prefixLength
-      if (buildWordList(prefix, buffer.getText(0, buffer.getLength()))) {
-        completing = true
-        true
-      } else {
-        false
-      }
+      buildWordList(prefix, buffer.getText(0, buffer.getLength()))
     } else {
       log("FinishHim: empty prefix, leaving")
-      false
+      wordList = List()
+    }
+  }
+  
+  def complete(view: View) = {
+    log("FinishHim: complete()")
+    if (!wordList.isEmpty) {
+      val nextWord = wordList(nextWordIndex)
+      textArea.setSelection(new Selection.Range(caret, caret - prefixLength + suggestedWordLength))
+      textArea.replaceSelection(nextWord.substring(prefixLength))
+      suggestedWordLength = nextWord.length()
+      nextWordIndex += 1
+      if (nextWordIndex >= wordList.size) nextWordIndex = 0
     }
   }
   
   def buildWordList(prefix: String, bufferText: String) = {
-    log("FinishHim: buildWordList")
+    log("FinishHim: buildWordList()")
     wordList = List.fromArray(bufferText.split("[^\\w]+")).removeDuplicates.filter { word => word.startsWith(prefix) } - prefix
     log("FinishHim: wordList = " + wordList)
-    !wordList.isEmpty
   }
   
   def getPrefix() : String = {
-    log("FinishHim: getPrefix")
+    log("FinishHim: getPrefix()")
 		val line = buffer.getLineSegment(caretLine)
 		val dot = caret - buffer.getLineStartOffset(caretLine)
 		if (dot == 0) return null
@@ -74,17 +75,6 @@ object FinishHimExecutor {
 		val prefix = line.subSequence(wordStartPos, dot)
 		if (prefix.length() == 0) return null
 		prefix.toString()
-  }
-  
-  def complete(view: View) = {
-    log("FinishHim: complete")
-    val nextWord = wordList(nextWordIndex)
-    textArea.setSelection(new Selection.Range(caret, caret - prefixLength + suggestedWordLength))
-    textArea.replaceSelection(nextWord.substring(prefixLength))
-    suggestedWordLength = nextWord.length()
-    nextWordIndex += 1
-    if (nextWordIndex >= wordList.size) nextWordIndex = 0
-    log("done!")
   }
   
   def log(msg: String) = {
