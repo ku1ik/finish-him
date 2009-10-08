@@ -9,14 +9,7 @@ object FinishHimExecutor {
   
   def execute(view: View) = {
     log("executing...")
-    getCompletorForView(view).complete()
-  }
-  
-  def getCompletorForView(view: View) : FinishHimCompletor = {
-    completors.get(view) match {
-      case None => val x = new FinishHimCompletor(view); completors(view) = x; x
-      case Some(x) => x
-    }
+    completors.getOrElseUpdate(view, new FinishHimCompletor(view)).complete()
   }
   
   def log(msg: String) = {
