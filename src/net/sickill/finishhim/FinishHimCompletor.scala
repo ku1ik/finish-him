@@ -38,12 +38,21 @@ class FinishHimCompletor(view: View) {
     }
   }
   
-  def complete() = {
+  def complete() : Unit = {
     log("complete()")
+    
     if (firstInvocation()) {
       setup()
     }
-    if (!wordList.isEmpty) {
+    
+		if (!buffer.isEditable()) {
+			textArea.getToolkit().beep()
+			return
+		}
+    
+    if (wordList.isEmpty) {
+			textArea.getToolkit().beep()
+    } else {
       val nextWord = wordList(nextWordIndex)
       textArea.setSelection(new Selection.Range(caret, caret - prefixLength + suggestedWordLength))
       textArea.replaceSelection(nextWord.substring(prefixLength))
