@@ -69,20 +69,40 @@ class FinishHimCompletor(view: View) {
     val buffers = new ArrayList[Buffer]()
     jEdit.visit(new JEditVisitorAdapter() {
       override def visit(editPane: EditPane) : Unit = {
-        buffers.add(editPane.getBuffer())
+        val b = editPane.getBuffer()
+        if (b != buffer) {
+          buffers.add(b)
+        }
       }
     })
     buffers
   }
   
-  def buildWordList(prefix: String, buffers: ArrayList[Buffer]) = {
+  def buildWordList(prefix: String, otherBuffers: ArrayList[Buffer]) = {
     log("buildWordList()")
-    var buffersText = ""
-    for (buffer <- buffers) {
-      buffersText += " " + buffer.getText(0, buffer.getLength())
+    // val words = new ArrayList[String]()
+    // var buffersText = ""
+    wordList = List()
+    
+    // add words before caret and reverse their position
+    wordList << getWordsFromString(buffer.getText(0, caret)).reverse
+    
+    // add word after caret
+    wordList += getWordsFromString(buffer.getText(caret, buffer.getLength()))
+
+    // add words from other buffers
+    for (buffer <- otherBuffers) {
+      wordList += getWordsFromString(buffer.getText(0, buffer.getLength()))
     }
-    wordList = List.fromArray(buffersText.split("[^\\w]+")).removeDuplicates.filter { word => word.startsWith(prefix) } - prefix
+    
+    // remove duplicated words
+    wordList = wordList.removeDuplicates
+    
     log("wordList = " + wordList)
+  }
+  
+  def getWordsFromString(s: String) : List[String] = {
+    List.fromArray(s.split("[^\\w]+")).filter { word => word.startsWith(prefix) } - prefix
   }
   
   def getPrefix() : String = {
