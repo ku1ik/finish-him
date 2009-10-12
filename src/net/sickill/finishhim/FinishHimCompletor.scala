@@ -6,6 +6,10 @@ import org.gjt.sp.jedit.textarea.JEditTextArea
 import org.gjt.sp.jedit.textarea.Selection
 import org.gjt.sp.util.Log
 import org.gjt.sp.jedit.TextUtilities
+import org.gjt.sp.jedit.jEdit
+import org.gjt.sp.jedit.visitors.JEditVisitorAdapter
+import org.gjt.sp.jedit.EditPane
+import scala.collection.jcl.ArrayList
 
 class FinishHimCompletor(view: View) {
   var wordList: List[String] = List()
@@ -31,7 +35,7 @@ class FinishHimCompletor(view: View) {
       log("found prefix: " + prefix)
       prefixLength = prefix.length()
       suggestedWordLength = prefixLength
-      buildWordList(prefix, buffer.getText(0, buffer.getLength()))
+      buildWordList(prefix, getVisibleBuffers())
     } else {
       log("empty prefix, leaving")
       wordList = List()
@@ -60,10 +64,24 @@ class FinishHimCompletor(view: View) {
       nextWordIndex = (nextWordIndex + 1) % wordList.size
     }
   }
+
+  def getVisibleBuffers() =	{
+    val buffers = new ArrayList[Buffer]()
+    jEdit.visit(new JEditVisitorAdapter() {
+      override def visit(editPane: EditPane) : Unit = {
+        buffers.add(editPane.getBuffer())
+      }
+    })
+    buffers
+  }
   
-  def buildWordList(prefix: String, bufferText: String) = {
+  def buildWordList(prefix: String, buffers: ArrayList[Buffer]) = {
     log("buildWordList()")
-    wordList = List.fromArray(bufferText.split("[^\\w]+")).removeDuplicates.filter { word => word.startsWith(prefix) } - prefix
+    var buffersText = ""
+    for (buffer <- buffers) {
+      buffersText += " " + buffer.getText(0, buffer.getLength())
+    }
+    wordList = List.fromArray(buffersText.split("[^\\w]+")).removeDuplicates.filter { word => word.startsWith(prefix) } - prefix
     log("wordList = " + wordList)
   }
   
