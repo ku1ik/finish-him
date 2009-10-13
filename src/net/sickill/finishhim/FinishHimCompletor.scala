@@ -17,6 +17,7 @@ class FinishHimCompletor(view: View) {
   var buffer: Buffer = null
   var textArea: JEditTextArea = null
   var caret = 0
+  var prefix: String = null
   var prefixLength = 0
   var suggestedWordLength = 0
   var caretLine = 0
@@ -30,12 +31,11 @@ class FinishHimCompletor(view: View) {
     textArea = view.getTextArea()
     caret = textArea.getCaretPosition()
     caretLine = textArea.getCaretLine()
-    val prefix = getPrefix()
-    if (prefix != null) {
+    if (findPrefix()) {
       log("found prefix: " + prefix)
       prefixLength = prefix.length()
       suggestedWordLength = prefixLength
-      buildWordList(prefix, getVisibleBuffers())
+      buildWordList()
     } else {
       log("empty prefix, leaving")
       wordList = List()
@@ -78,44 +78,39 @@ class FinishHimCompletor(view: View) {
     buffers
   }
   
-  def buildWordList(prefix: String, otherBuffers: ArrayList[Buffer]) = {
+  def buildWordList() = {
     log("buildWordList()")
-    // val words = new ArrayList[String]()
-    // var buffersText = ""
-    wordList = List()
-    
-    // add words before caret and reverse their position
-    wordList << getWordsFromString(buffer.getText(0, caret)).reverse
-    
-    // add word after caret
-    wordList += getWordsFromString(buffer.getText(caret, buffer.getLength()))
-
+    // add words before caret and reverse their position and words after caret
+    wordList = getWordsFromBuffer(buffer, 0, caret).reverse ++ getWordsFromBuffer(buffer, caret, buffer.getLength())
     // add words from other buffers
-    for (buffer <- otherBuffers) {
-      wordList += getWordsFromString(buffer.getText(0, buffer.getLength()))
+    for (buffer <- getVisibleBuffers()) {
+      wordList = wordList ++ getWordsFromBuffer(buffer, 0, buffer.getLength())
     }
-    
     // remove duplicated words
     wordList = wordList.removeDuplicates
-    
     log("wordList = " + wordList)
+  }
+  
+  def getWordsFromBuffer(buffer: Buffer, start: Int, end: Int) : List[String] = {
+    getWordsFromString(buffer.getText(start, end-start))
   }
   
   def getWordsFromString(s: String) : List[String] = {
     List.fromArray(s.split("[^\\w]+")).filter { word => word.startsWith(prefix) } - prefix
   }
   
-  def getPrefix() : String = {
+  def findPrefix() : Boolean = {
     log("getPrefix()")
 		val line = buffer.getLineSegment(caretLine)
 		val dot = caret - buffer.getLineStartOffset(caretLine)
-		if (dot == 0) return null
+		if (dot == 0) return false
 		val ch = line.charAt(dot-1)
-		if (!Character.isLetterOrDigit(ch)) return null
+		if (!Character.isLetterOrDigit(ch)) return false
 		val wordStartPos = TextUtilities.findWordStart(line, dot-1, "")
-		val prefix = line.subSequence(wordStartPos, dot)
-		if (prefix.length() == 0) return null
-		prefix.toString()
+		val prfx = line.subSequence(wordStartPos, dot)
+		if (prfx.length() == 0) return false
+		prefix = prfx.toString()
+		true
   }
 
   def log(msg: String) = {
