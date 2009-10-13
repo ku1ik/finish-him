@@ -12,6 +12,7 @@ import org.gjt.sp.jedit.EditPane
 import scala.collection.jcl.ArrayList
 
 class FinishHimCompletor(view: View) {
+  val noWordSep = "_"
   var wordList: List[String] = List()
   var nextWordIndex = 0
   var buffer: Buffer = null
@@ -80,14 +81,14 @@ class FinishHimCompletor(view: View) {
   
   def buildWordList() = {
     log("buildWordList()")
-    // add words before caret and reverse their position and words after caret
+    // add words before caret (in reversed order) and words after caret
     wordList = getWordsFromBuffer(buffer, 0, caret).reverse ++ getWordsFromBuffer(buffer, caret, buffer.getLength())
     // add words from other buffers
     for (buffer <- getVisibleBuffers()) {
       wordList = wordList ++ getWordsFromBuffer(buffer, 0, buffer.getLength())
     }
     // remove duplicated words
-    wordList = wordList.removeDuplicates
+    wordList = wordList.reverse.removeDuplicates.reverse // double reverse is a fix for weird behaviour of removeDuplicates
     log("wordList = " + wordList)
   }
   
@@ -96,7 +97,7 @@ class FinishHimCompletor(view: View) {
   }
   
   def getWordsFromString(s: String) : List[String] = {
-    List.fromArray(s.split("[^\\w]+")).filter { word => word.startsWith(prefix) } - prefix
+    List.fromArray(s.split("[^\\w" + noWordSep + "]+")).filter { word => word.startsWith(prefix) } - prefix
   }
   
   def findPrefix() : Boolean = {
@@ -104,9 +105,9 @@ class FinishHimCompletor(view: View) {
 		val line = buffer.getLineSegment(caretLine)
 		val dot = caret - buffer.getLineStartOffset(caretLine)
 		if (dot == 0) return false
-		val ch = line.charAt(dot-1)
-		if (!Character.isLetterOrDigit(ch)) return false
-		val wordStartPos = TextUtilities.findWordStart(line, dot-1, "")
+		val c = line.charAt(dot-1)
+		if (!Character.isLetterOrDigit(c) && !noWordSep.contains(c)) return false
+		val wordStartPos = TextUtilities.findWordStart(line, dot-1, "_")
 		val prfx = line.subSequence(wordStartPos, dot)
 		if (prfx.length() == 0) return false
 		prefix = prfx.toString()
@@ -114,7 +115,7 @@ class FinishHimCompletor(view: View) {
   }
 
   def log(msg: String) = {
-    FinishHimExecutor.log("FinishHimCompletor: " + msg)
+    Log.log(Log.DEBUG, this, msg)
   }
 
 }

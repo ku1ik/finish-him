@@ -2,7 +2,7 @@
 plugin.net.sickill.finishhim.FinishHimPlugin.activate=defer
 plugin.net.sickill.finishhim.FinishHimPlugin.name=Finish Him
 plugin.net.sickill.finishhim.FinishHimPlugin.author=Marcin Kulik
-plugin.net.sickill.finishhim.FinishHimPlugin.version=0.1
+plugin.net.sickill.finishhim.FinishHimPlugin.version=0.9
 plugin.net.sickill.finishhim.FinishHimPlugin.docs=docs/index.html
 plugin.net.sickill.finishhim.FinishHimPlugin.description=Finish Him kills'em all!
 plugin.net.sickill.finishhim.FinishHimPlugin.longdescription=description.html
@@ -11,20 +11,5 @@ plugin.net.sickill.finishhim.FinishHimPlugin.longdescription=description.html
 plugin.net.sickill.finishhim.FinishHimPlugin.depend.0=jdk 1.5
 plugin.net.sickill.finishhim.FinishHimPlugin.depend.1=jedit 04.03.16.00
 
-#off.label=Off
-#off.title=Open File Fast
-#off.longtitle=Open File Fast
-
-#openfilefastdockable.label=Open File Fast Dockable
-#openfilefastdockable.title=Open File Fast
-
 finishhim.execute.label=Finish Him!
-
-#Menu Items Settings
-#plugin.net.sickill.finish-him.FinishHimPlugin.menu=openfilefastdockable offwindow.show
-
-# option pane settings
-#plugin.net.sickill.finish-him.FinishHimPlugin.option-pane=off
-#options.off.label=Open File Fast
-#options.off.code=new net.sickill.off.jedit.options.JEditOptionsPanel();
 
