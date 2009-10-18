@@ -1,15 +1,13 @@
 # general
 plugin.net.sickill.finishhim.FinishHimPlugin.activate=defer
-plugin.net.sickill.finishhim.FinishHimPlugin.name=Finish Him
+plugin.net.sickill.finishhim.FinishHimPlugin.name=Finish Him!
 plugin.net.sickill.finishhim.FinishHimPlugin.author=Marcin Kulik
 plugin.net.sickill.finishhim.FinishHimPlugin.version=0.9
 plugin.net.sickill.finishhim.FinishHimPlugin.docs=docs/index.html
-plugin.net.sickill.finishhim.FinishHimPlugin.description=Finish Him kills'em all!
-plugin.net.sickill.finishhim.FinishHimPlugin.longdescription=description.html
+plugin.net.sickill.finishhim.FinishHimPlugin.description=Finish Him! is a smart and quick word completion (expansion) plugin similar to Textmate's or Netbeans word completion. It allows you to cycle through completions by hitting its keyboard shortcut continuously.
 
 # dependencies
-plugin.net.sickill.finishhim.FinishHimPlugin.depend.0=jdk 1.5
+plugin.net.sickill.finishhim.FinishHimPlugin.depend.0=jdk 1.6
 plugin.net.sickill.finishhim.FinishHimPlugin.depend.1=jedit 04.03.16.00
 
 finishhim.execute.label=Finish Him!
-
