@@ -9,7 +9,7 @@ import org.gjt.sp.jedit.TextUtilities
 import org.gjt.sp.jedit.jEdit
 import org.gjt.sp.jedit.visitors.JEditVisitorAdapter
 import org.gjt.sp.jedit.EditPane
-import scala.collection.jcl.ArrayList
+import scala.collection.mutable.HashSet
 
 class FinishHimCompletor(view: View) {
   val noWordSep = "_"
@@ -34,8 +34,6 @@ class FinishHimCompletor(view: View) {
     caretLine = textArea.getCaretLine()
     if (findPrefix()) {
       log("found prefix: " + prefix)
-      prefixLength = prefix.length()
-      suggestedWordLength = prefixLength
       buildWordList()
     } else {
       log("empty prefix, leaving")
@@ -50,13 +48,13 @@ class FinishHimCompletor(view: View) {
       setup()
     }
     
-		if (!buffer.isEditable()) {
-			textArea.getToolkit().beep()
-			return
-		}
+    if (!buffer.isEditable()) {
+      textArea.getToolkit().beep()
+      return
+    }
     
     if (wordList.isEmpty) {
-			textArea.getToolkit().beep()
+      textArea.getToolkit().beep()
     } else {
       val nextWord = wordList(nextWordIndex)
       textArea.setSelection(new Selection.Range(caret, caret - prefixLength + suggestedWordLength))
@@ -67,12 +65,12 @@ class FinishHimCompletor(view: View) {
   }
 
   def getVisibleBuffers() =	{
-    val buffers = new ArrayList[Buffer]()
+    val buffers = new HashSet[Buffer]()
     jEdit.visit(new JEditVisitorAdapter() {
       override def visit(editPane: EditPane) : Unit = {
         val b = editPane.getBuffer()
         if (b != buffer) {
-          buffers.add(b)
+          buffers += b
         }
       }
     })
@@ -102,16 +100,18 @@ class FinishHimCompletor(view: View) {
   
   def findPrefix() : Boolean = {
     log("getPrefix()")
-		val line = buffer.getLineSegment(caretLine)
-		val dot = caret - buffer.getLineStartOffset(caretLine)
-		if (dot == 0) return false
-		val c = line.charAt(dot-1)
-		if (!Character.isLetterOrDigit(c) && !noWordSep.contains(c)) return false
-		val wordStartPos = TextUtilities.findWordStart(line, dot-1, "_")
-		val prfx = line.subSequence(wordStartPos, dot)
-		if (prfx.length() == 0) return false
-		prefix = prfx.toString()
-		true
+    val line = buffer.getLineSegment(caretLine)
+    val dot = caret - buffer.getLineStartOffset(caretLine)
+    if (dot == 0) return false
+    val c = line.charAt(dot-1)
+    if (!Character.isLetterOrDigit(c) && !noWordSep.contains(c)) return false
+    val wordStartPos = TextUtilities.findWordStart(line, dot-1, "_")
+    val prfx = line.subSequence(wordStartPos, dot)
+    if (prfx.length() == 0) return false
+    prefix = prfx.toString()
+    prefixLength = prefix.length()
+    suggestedWordLength = prefixLength
+    true
   }
 
   def log(msg: String) = {
