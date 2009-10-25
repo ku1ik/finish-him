@@ -19,8 +19,9 @@ It's main differences with standard JEdit's "Complete Word" action are:
 
 Requirements
 ------------
-* JDK 1.6
-* JEdit 4.3pre16+
+* JDK 1.5
+* JEdit 4.3pre17+
+* Scala Plugin 1.1.0
 
 Author / Contact
 ----------------
