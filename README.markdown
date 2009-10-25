@@ -19,9 +19,16 @@ It's main differences with standard JEdit's "Complete Word" action are:
 
 Requirements
 ------------
+
 * JDK 1.5
 * JEdit 4.3pre17+
 * Scala Plugin 1.1.0
+
+Configuration
+-------------
+
+This plugin currently doesn't have any configuration options, it just doesn't need any right now.
+However I suggest to add a shortcut key to Finish Him! completion action in jEdit Options Pane. Personaly I use ESC key for it (like default Textmate's shortcut for word completion).
 
 Author / Contact
 ----------------
