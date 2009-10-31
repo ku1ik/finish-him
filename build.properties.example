@@ -1,5 +1,12 @@
 # The root of your jEdit install. Folder must contain jedit.jar in root.
-jedit.install.dir=/home/username/jedit/current
+jedit.install.dir=${user.home}/jedit/current
 
-# User installed jars directory
-install.dir=HOME_DIR_REPLACE/.jedit/jars
+# User settings directory
+jedit.user.home=${user.home}/.jedit
+
+# location where your jars are installed
+install.dir=${jedit.user.home}/jars
+
+# Location where the plugins are
+jedit.plugins.dir=${install.dir}
+

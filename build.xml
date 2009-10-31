@@ -4,47 +4,28 @@
      This is a build.xml file for building the FinishHim plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
-     Before running the 'dist' target, you will need to generate the
-     documentation using one of these two targets:
-
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool
-
-     To use it for building your own plugin, make these changes:
-
-     - Change definition of 'jar.name' to the name of your plugin's JAR file
-     - If necessary, add any dependencies to the 'project.class.path'
-       definition
-     - If necessary, change the list of files in the 'dist' targtet
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
-       accordingly.
 -->
 
 <project name="finish-him" default="dist" basedir=".">
-	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property file="build.properties"/>
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	<property name="version"  value="0.1"/>
+	<property name="version"  value="0.9"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 
-	<property name="jedit.install.dir"  value=".."/>
-	<property name="jedit.jars.dir"  value="${jedit.install.dir}/jars"/>
-
 	<property environment="env"/>
 
-	<property name="scala.lib.dir" location="${env.SCALA_HOME}/lib"/>
-
 	<path id="scala.classpath">
-		<pathelement location="${scala.lib.dir}/scala-compiler.jar"/>
-		<pathelement location="${scala.lib.dir}/scala-library.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ScalacPlugin.jar"/>
 	</path>
 
 	<path id="project.classpath">
 		<path refid="scala.classpath" />
-		<pathelement location="${jedit.install.dir}/jedit.jar"/> 
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit.plugins.dir}/ScalacPlugin.jar"/>
 	</path>
 
 	<target name="init">
@@ -67,7 +48,6 @@
 
 
 	<target name="dist" depends="build">
-		<!-- <mkdir dir="${install.dir}"/> -->
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
@@ -83,7 +63,6 @@
 		<delete file="${srcfile}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<!--fileset dir="." includes="**/*.html" defaultexcludes="no"/-->
 		</delete>
 	</target>
 </project>
