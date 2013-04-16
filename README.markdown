@@ -35,4 +35,4 @@ Author / Contact
 
 Finish Him! was created by Marcin Kulik.
 
-Check out my website for more cool software: [sickill.net](http://sickill.net/)
+Check out my website for more cool software: [ku1ik.com](http://ku1ik.com/)
