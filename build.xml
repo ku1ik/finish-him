@@ -41,6 +41,7 @@
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			classpathref="project.classpath"
+			classpath="/usr/share/maven-repo/org/jsr-305/jsr305/0.x/jsr305-0.x.jar"
 			deprecation="on"
 		>
 		</scalac>

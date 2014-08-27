@@ -95,7 +95,7 @@ class FinishHimCompletor(view: View) {
   }
   
   def getWordsFromString(s: String) : List[String] = {
-    List.fromArray(s.split("[^\\w" + noWordSep + "]+")).filter { word => word.startsWith(prefix) } - prefix
+    List.fromArray(s.split("(?U)[^\\w" + noWordSep + "]+")).filter { word => word.startsWith(prefix) } - prefix
   }
   
   def findPrefix() : Boolean = {
