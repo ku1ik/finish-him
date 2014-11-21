@@ -1,5 +1,6 @@
 package net.sickill.finishhim
 
+import org.gjt.sp.jedit.Mode
 import org.gjt.sp.jedit.View
 import org.gjt.sp.jedit.Buffer
 import org.gjt.sp.jedit.textarea.JEditTextArea
@@ -12,7 +13,6 @@ import org.gjt.sp.jedit.EditPane
 import scala.collection.mutable.HashSet
 
 class FinishHimCompletor(view: View) {
-  val noWordSep = "_"
   var wordList: List[String] = List()
   var nextWordIndex = 0
   var buffer: Buffer = null
@@ -24,6 +24,14 @@ class FinishHimCompletor(view: View) {
   var caretLine = 0
   
   def firstInvocation() : Boolean = view.getInputHandler().getLastActionCount == 1
+
+  def noWordSep() = {
+    if (Set("clojure","lisp") contains buffer.getMode().getName()) {
+        "_-"
+    } else {
+        "_"
+    }
+  }
 
   def setup() = {
     log("setup()")
@@ -95,7 +103,7 @@ class FinishHimCompletor(view: View) {
   }
   
   def getWordsFromString(s: String) : List[String] = {
-    List.fromArray(s.split("(?U)[^\\w" + noWordSep + "]+")).filter { word => word.startsWith(prefix) } - prefix
+    List.fromArray(s.split("(?U)[^\\w" + noWordSep() + "]+")).filter { word => word.startsWith(prefix) } - prefix
   }
   
   def findPrefix() : Boolean = {
@@ -104,7 +112,7 @@ class FinishHimCompletor(view: View) {
     val dot = caret - buffer.getLineStartOffset(caretLine)
     if (dot == 0) return false
     val c = line.charAt(dot-1)
-    if (!Character.isLetterOrDigit(c) && !noWordSep.contains(c)) return false
+    if (!Character.isLetterOrDigit(c) && !noWordSep().contains(c)) return false
     val wordStartPos = TextUtilities.findWordStart(line, dot-1, "_")
     val prfx = line.subSequence(wordStartPos, dot)
     if (prfx.length() == 0) return false
