@@ -30,6 +30,11 @@ Configuration
 This plugin currently doesn't have any configuration options, it just doesn't need any right now.
 However I suggest to add a shortcut key to Finish Him! completion action in jEdit Options Pane. Personaly I use ESC key for it (like default Textmate's shortcut for word completion).
 
+Build
+-----
+
+Set your properties in build.properties and run Ant.
+
 Author / Contact
 ----------------
 
